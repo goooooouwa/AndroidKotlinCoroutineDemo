@@ -14,9 +14,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var tvMessage: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         val btnDownload = findViewById<Button>(R.id.btnDownload)
         val btnCount = findViewById<Button>(R.id.btnCount)
         val tvCount = findViewById<TextView>(R.id.tvCount)
+        tvMessage = findViewById(R.id.tvMessage)
 
         viewModel.count.observe(this, Observer {
             tvCount.text = it.toString()
@@ -50,6 +53,9 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun downloadHandler() {
         for (i in 1..200000) {
+            withContext(Dispatchers.Main) {
+                tvMessage.text = "Downloading #$i in ${Thread.currentThread().name}"
+            }
             Log.i("MyTag", "Downloading #$i in ${Thread.currentThread().name}")
             delay(1000)
         }
